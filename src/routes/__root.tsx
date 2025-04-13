@@ -9,7 +9,7 @@ function RootComponent() {
   return (
     <React.Fragment>
       <nav>
-        <Link to={"/home"}>Home</Link>
+        <Link to={"/"}>Home</Link>
         <Link to={"/contact"}>Contact</Link>
         <Link to={"/about"}>About</Link>
       </nav>
