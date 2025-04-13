@@ -13,6 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PostsIndexImport } from './routes/posts/index'
+import { Route as PostsIdImport } from './routes/posts/$id'
 
 // Create Virtual Routes
 
@@ -40,6 +42,18 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
+const PostsIndexRoute = PostsIndexImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PostsIdRoute = PostsIdImport.update({
+  id: '/posts/$id',
+  path: '/posts/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -65,6 +79,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactLazyImport
       parentRoute: typeof rootRoute
     }
+    '/posts/$id': {
+      id: '/posts/$id'
+      path: '/posts/$id'
+      fullPath: '/posts/$id'
+      preLoaderRoute: typeof PostsIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/posts/': {
+      id: '/posts/'
+      path: '/posts'
+      fullPath: '/posts'
+      preLoaderRoute: typeof PostsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -74,12 +102,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
   '/contact': typeof ContactLazyRoute
+  '/posts/$id': typeof PostsIdRoute
+  '/posts': typeof PostsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
   '/contact': typeof ContactLazyRoute
+  '/posts/$id': typeof PostsIdRoute
+  '/posts': typeof PostsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -87,14 +119,16 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
   '/contact': typeof ContactLazyRoute
+  '/posts/$id': typeof PostsIdRoute
+  '/posts/': typeof PostsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/contact'
+  fullPaths: '/' | '/about' | '/contact' | '/posts/$id' | '/posts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contact'
-  id: '__root__' | '/' | '/about' | '/contact'
+  to: '/' | '/about' | '/contact' | '/posts/$id' | '/posts'
+  id: '__root__' | '/' | '/about' | '/contact' | '/posts/$id' | '/posts/'
   fileRoutesById: FileRoutesById
 }
 
@@ -102,12 +136,16 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   AboutLazyRoute: typeof AboutLazyRoute
   ContactLazyRoute: typeof ContactLazyRoute
+  PostsIdRoute: typeof PostsIdRoute
+  PostsIndexRoute: typeof PostsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   AboutLazyRoute: AboutLazyRoute,
   ContactLazyRoute: ContactLazyRoute,
+  PostsIdRoute: PostsIdRoute,
+  PostsIndexRoute: PostsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -122,7 +160,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
-        "/contact"
+        "/contact",
+        "/posts/$id",
+        "/posts/"
       ]
     },
     "/": {
@@ -133,6 +173,12 @@ export const routeTree = rootRoute
     },
     "/contact": {
       "filePath": "contact.lazy.tsx"
+    },
+    "/posts/$id": {
+      "filePath": "posts/$id.tsx"
+    },
+    "/posts/": {
+      "filePath": "posts/index.tsx"
     }
   }
 }
