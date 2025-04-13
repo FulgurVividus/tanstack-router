@@ -8,32 +8,37 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ContactImport } from './routes/contact'
-import { Route as AboutImport } from './routes/about'
-import { Route as IndexImport } from './routes/index'
+
+// Create Virtual Routes
+
+const ContactLazyImport = createFileRoute('/contact')()
+const AboutLazyImport = createFileRoute('/about')()
+const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
-const ContactRoute = ContactImport.update({
+const ContactLazyRoute = ContactLazyImport.update({
   id: '/contact',
   path: '/contact',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/contact.lazy').then((d) => d.Route))
 
-const AboutRoute = AboutImport.update({
+const AboutLazyRoute = AboutLazyImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
-const IndexRoute = IndexImport.update({
+const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -43,21 +48,21 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+      preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
-      preLoaderRoute: typeof ContactImport
+      preLoaderRoute: typeof ContactLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -66,22 +71,22 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contact': typeof ContactRoute
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/contact': typeof ContactLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contact': typeof ContactRoute
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/contact': typeof ContactLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contact': typeof ContactRoute
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/contact': typeof ContactLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -94,15 +99,15 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  ContactRoute: typeof ContactRoute
+  IndexLazyRoute: typeof IndexLazyRoute
+  AboutLazyRoute: typeof AboutLazyRoute
+  ContactLazyRoute: typeof ContactLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  ContactRoute: ContactRoute,
+  IndexLazyRoute: IndexLazyRoute,
+  AboutLazyRoute: AboutLazyRoute,
+  ContactLazyRoute: ContactLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -121,13 +126,13 @@ export const routeTree = rootRoute
       ]
     },
     "/": {
-      "filePath": "index.tsx"
+      "filePath": "index.lazy.tsx"
     },
     "/about": {
-      "filePath": "about.tsx"
+      "filePath": "about.lazy.tsx"
     },
     "/contact": {
-      "filePath": "contact.tsx"
+      "filePath": "contact.lazy.tsx"
     }
   }
 }
